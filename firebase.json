@@ -1,7 +1,7 @@
 {
   "firestore": {
     "database": "(default)",
-    "location": "nam5",
+    "location": "eur3",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
@@ -11,7 +11,7 @@
     }
   },
   "hosting": {
-    "source": "apps/admin-web",
+    "source": "apps/commerce-web",
     "ignore": [
       "firebase.json",
       "**/.*",
