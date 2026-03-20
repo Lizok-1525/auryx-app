@@ -1,0 +1,16 @@
+{
+  "name": "auryx-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "firebase": "^12.10.0",
+    "lucide-react": "^0.577.0",
+    "recharts": "^3.8.0",
+    "zustand": "^5.0.11"
+  }
+}
