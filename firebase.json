@@ -22,7 +22,7 @@
     },
     {
       "site": "auryx-cliente",
-      "source": "apps/client-app",
+      "public": "apps/client-app/dist",
       "ignore": [
         "firebase.json",
         "**/.*",
