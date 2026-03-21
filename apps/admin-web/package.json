@@ -2,6 +2,9 @@
   "name": "admin-web",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -12,8 +15,8 @@
     "firebase": "^10.8.0",
     "lucide-react": "^0.344.0",
     "next": "^15.1.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "recharts": "^2.12.0",
     "zustand": "^4.5.0",
     "date-fns": "^3.3.1"

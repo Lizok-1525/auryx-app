@@ -6,6 +6,7 @@ import { useAuthStore } from './src/store/authStore';
 import { Store, Map as MapIcon, Compass } from 'lucide-react-native';
 import { theme } from './src/lib/theme';
 import { View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import LoginScreen from './src/screens/LoginScreen';
 import ShopScreen from './src/screens/ShopScreen';
@@ -69,8 +70,6 @@ function MainTabs() {
     </Tab.Navigator>
   );
 }
-
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function App() {
   const { user } = useAuthStore();
