@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TextInput, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput, Dimensions, ActivityIndicator } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 import { auth, db } from '../lib/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, collection, query, where } from 'firebase/firestore';
 import { Wallet, Search, MapPin, Store, ChevronRight, Star } from 'lucide-react-native';
 import { theme } from '../lib/theme';
 import Animated, { FadeInRight, FadeInDown, SlideInDown } from 'react-native-reanimated';
@@ -14,13 +14,9 @@ const { width } = Dimensions.get('window');
 export default function ShopScreen({ navigation }: any) {
   const { user, points, setPoints } = useAuthStore();
   const [userName, setUserName] = React.useState('Cargando...');
+  const [shops, setShops] = React.useState<any[]>([]);
+  const [loadingShops, setLoadingShops] = React.useState(true);
   
-  const shops = [
-    { id: '1', name: 'Auryx Premium Burgers', type: 'Comida Rápida', status: 'Abierto', rating: 4.9, time: '15-20 min' },
-    { id: '2', name: 'Farmacia 24H', type: 'Salud', status: 'Abierto', rating: 4.8, time: '10 min' },
-    { id: '3', name: 'Fresh Market', type: 'Víveres', status: 'Cerrado', rating: 4.6, time: '-' },
-  ];
-
   const categories = [
     { id: 'c1', name: 'Restaurantes', icon: '🍔' },
     { id: 'c2', name: 'Supermercados', icon: '🛒' },
@@ -30,14 +26,36 @@ export default function ShopScreen({ navigation }: any) {
 
   useEffect(() => {
     if (!user) return;
-    const unsub = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
+    
+    // User data Sync
+    const unsubUser = onSnapshot(doc(db, "users", user.uid), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         setUserName(data.fullName?.split(" ")[0] || 'Cliente');
         setPoints(data.points || 0);
       }
     });
-    return () => unsub();
+
+    // Shops Sync
+    const shopsQuery = query(collection(db, "users"), where("role", "==", "commerce"));
+    const unsubShops = onSnapshot(shopsQuery, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data(),
+        // Mapping fields for the UI
+        type: doc.data().category || 'Comercio',
+        status: doc.data().isActive ? 'Abierto' : 'Cerrado',
+        rating: doc.data().rating || (4.5 + Math.random() * 0.5).toFixed(1), // Fallback
+        time: doc.data().deliveryTime || '15-25 min'
+      }));
+      setShops(data);
+      setLoadingShops(false);
+    });
+
+    return () => {
+      unsubUser();
+      unsubShops();
+    };
   }, [user]);
 
   return (
@@ -51,7 +69,7 @@ export default function ShopScreen({ navigation }: any) {
           <View>
             <Text style={styles.greetingHeader}>Entregando a</Text>
             <View style={styles.locationContainer}>
-              <Text style={styles.locationText}>Mi Ubicación Actual</Text>
+              <Text style={styles.locationText} numberOfLines={1}>Mi Ubicación Actual</Text>
               <ChevronRight color={theme.colors.primary} size={20} />
             </View>
           </View>
@@ -96,44 +114,52 @@ export default function ShopScreen({ navigation }: any) {
         </Animated.View>
 
         <Animated.Text entering={FadeInDown.duration(600).delay(400)} style={styles.sectionTitle}>
-          Cerca de ti <Text style={styles.sectionTitleAccent}>✨</Text>
+          {loadingShops ? 'Buscando tiendas...' : 'Cerca de ti'} <Text style={styles.sectionTitleAccent}>✨</Text>
         </Animated.Text>
 
         {/* Grid Tiendas */}
         <View style={styles.grid}>
-          {shops.map((shop, index) => (
-            <Animated.View key={shop.id} entering={FadeInDown.duration(600).delay(400 + (index * 100))}>
-              <TouchableOpacity style={styles.shopCard} activeOpacity={0.8}>
-                
-                <View style={styles.shopImagePlaceholder}>
-                   {/* Replace with actual shop images, gradient for now */}
-                   <View style={styles.shopImageGradient}>
-                     <Store color={theme.colors.secondary} size={32} />
-                   </View>
-                   {shop.status === 'Cerrado' && <View style={styles.closedOverlay}><Text style={styles.closedText}>Cerrado</Text></View>}
-                </View>
-
-                <View style={styles.shopInfo}>
-                  <View style={styles.shopMetaRow}>
-                    <Text style={styles.shopName} numberOfLines={1}>{shop.name}</Text>
-                    <View style={styles.ratingBadge}>
-                      <Star color={theme.colors.primary} size={12} fill={theme.colors.primary} />
-                      <Text style={styles.ratingText}>{shop.rating}</Text>
+          {loadingShops ? (
+             <ActivityIndicator color={theme.colors.primary} size="large" />
+          ) : shops.length === 0 ? (
+             <View style={styles.emptyContainer}>
+                <Store color={theme.colors.textMuted} size={48} />
+                <Text style={styles.emptyText}>No hay tiendas disponibles pronto</Text>
+             </View>
+          ) : (
+            shops.map((shop, index) => (
+              <Animated.View key={shop.id} entering={FadeInDown.duration(600).delay(400 + (index * 100))}>
+                <TouchableOpacity style={styles.shopCard} activeOpacity={0.8} onPress={() => {/* Navigate to Detail */}}>
+                  
+                  <View style={styles.shopImagePlaceholder}>
+                     <View style={[styles.shopImageGradient, { backgroundColor: index % 2 === 0 ? theme.colors.primary : theme.colors.secondary }]}>
+                       <Store color="#fff" size={32} />
+                     </View>
+                     {shop.status === 'Cerrado' && <View style={styles.closedOverlay}><Text style={styles.closedText}>Cerrado</Text></View>}
+                  </View>
+  
+                  <View style={styles.shopInfo}>
+                    <View style={styles.shopMetaRow}>
+                      <Text style={styles.shopName} numberOfLines={1}>{shop.fullName || shop.name}</Text>
+                      <View style={styles.ratingBadge}>
+                        <Star color={theme.colors.primary} size={12} fill={theme.colors.primary} />
+                        <Text style={styles.ratingText}>{shop.rating}</Text>
+                      </View>
+                    </View>
+  
+                    <Text style={styles.shopType} numberOfLines={1}>{shop.address}</Text>
+                    
+                    <View style={styles.shopFooter}>
+                      <Text style={styles.deliveryTime}>{shop.time}</Text>
+                      <View style={styles.dot} />
+                      <Text style={styles.deliveryFee}>Envío $1.99</Text>
                     </View>
                   </View>
-
-                  <Text style={styles.shopType}>{shop.type}</Text>
-                  
-                  <View style={styles.shopFooter}>
-                    <Text style={styles.deliveryTime}>{shop.time}</Text>
-                    <View style={styles.dot} />
-                    <Text style={styles.deliveryFee}>Envío $1.99</Text>
-                  </View>
-                </View>
-
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
+  
+                </TouchableOpacity>
+              </Animated.View>
+            ))
+          )}
         </View>
 
       </ScrollView>
@@ -192,5 +218,7 @@ const styles = StyleSheet.create({
   shopFooter: { flexDirection: 'row', alignItems: 'center' },
   deliveryTime: { color: theme.colors.primary, fontSize: 13, fontWeight: '600' },
   dot: { width: 4, height: 4, borderRadius: 2, backgroundColor: theme.colors.textMuted, marginHorizontal: 8 },
-  deliveryFee: { color: theme.colors.textMuted, fontSize: 13 }
+  deliveryFee: { color: theme.colors.textMuted, fontSize: 13 },
+  emptyContainer: { paddingVertical: 40, alignItems: 'center', justifyContent: 'center' },
+  emptyText: { color: theme.colors.textMuted, marginTop: 12, fontSize: 16, fontWeight: '600' }
 });

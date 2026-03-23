@@ -2,8 +2,9 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { getDatabase } from 'firebase/database';
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyCHVh74WUSx-5DCmo_bISkPdcMVKaHqIdo",
   authDomain: "auryx-company.firebaseapp.com",
   projectId: "auryx-company",
@@ -16,5 +17,6 @@ const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const rtdb = getDatabase(app);
 
-export { app, auth, db, storage };
+export { app, auth, db, storage, rtdb };

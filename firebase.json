@@ -13,7 +13,15 @@
   "hosting": [
     {
       "site": "auryx-comercio",
-      "public": "public-comercio",
+      "public": "apps/commerce-web/out",
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -23,6 +31,48 @@
     {
       "site": "auryx-cliente",
       "public": "apps/client-app/dist",
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    },
+    {
+      "site": "auryxcompany-admin",
+      "public": "apps/admin-web/out",
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    },
+    {
+      "site": "auryx-courier",
+      "public": "apps/courier-app/dist",
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ],
       "ignore": [
         "firebase.json",
         "**/.*",
@@ -87,91 +137,6 @@
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ],
       "source": "functions"
-    },
-    {
-      "codebase": "auryx",
-      "disallowLegacyRuntimeConfig": true,
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "source": "auryx"
-    },
-    {
-      "codebase": "client-auryx",
-      "disallowLegacyRuntimeConfig": true,
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "source": "client-auryx"
-    },
-    {
-      "codebase": "client-app",
-      "disallowLegacyRuntimeConfig": true,
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "source": "client-app"
-    },
-    {
-      "codebase": "clientes-auryx",
-      "disallowLegacyRuntimeConfig": true,
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "source": "clientes-auryx"
-    },
-    {
-      "codebase": "auryx-client",
-      "disallowLegacyRuntimeConfig": true,
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "source": "auryx-client"
-    },
-    {
-      "codebase": "admin",
-      "disallowLegacyRuntimeConfig": true,
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ],
-      "source": "admin"
-    },
-    {
-      "source": "auryxcompany-admin",
-      "codebase": "auryxcompany-admin",
-      "disallowLegacyRuntimeConfig": true,
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "*.local"
-      ],
-      "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" run lint",
-        "npm --prefix \"$RESOURCE_DIR\" run build"
-      ]
     }
   ],
   "apphosting": [
@@ -199,50 +164,6 @@
     },
     {
       "backendId": "client-app",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    },
-    {
-      "backendId": "client-auryxapp",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    },
-    {
-      "backendId": "client-app",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    },
-    {
-      "backendId": "adminauryx",
-      "rootDir": "/",
-      "ignore": [
-        "node_modules",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log",
-        "functions"
-      ]
-    },
-    {
-      "backendId": "auryx-admin",
       "rootDir": "/",
       "ignore": [
         "node_modules",

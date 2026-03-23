@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutDashboard, PlusCircle, History, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, PlusCircle, History, Settings, LogOut, Headset } from "lucide-react";
 
 export function Sidebar({ onSignOut }: { onSignOut: () => void }) {
   const navItems = [
     { label: "Panel de Pedidos", href: "/", icon: LayoutDashboard },
     { label: "Crear Pedido Manual", href: "/new-order", icon: PlusCircle },
     { label: "Historial", href: "/history", icon: History },
+    { label: "Soporte", href: "/support", icon: Headset },
     { label: "Configuración", href: "/settings", icon: Settings },
   ];
 

@@ -13,15 +13,24 @@ export default function CommerceLayout({ children }: { children: React.ReactNode
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        if (userDoc.exists() && userDoc.data().role === "commerce") {
-          setLoading(false);
-          return;
+      try {
+        if (currentUser) {
+          const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+          if (userDoc.exists() && userDoc.data().role === "commerce") {
+            setLoading(false);
+            return;
+          }
         }
+        await signOut(auth);
+        router.push("/login");
+      } catch (error) {
+        console.error("Auth sync error (Commerce):", error);
+        if (!currentUser) {
+          router.push("/login");
+        }
+      } finally {
+        setLoading(false);
       }
-      await signOut(auth);
-      router.push("/login");
     });
     return () => unsubscribe();
   }, [router]);
